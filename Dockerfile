@@ -1,9 +1,9 @@
-FROM golang:latest
+FROM golang:1.14-alpine AS build
 
-WORKDIR /usr/src/app
+WORKDIR /src/
+COPY index.go go.* /src/
+RUN CGO_ENABLED=0 go build -o /bin/demo
 
-COPY . .
-
-EXPOSE 3000
-
-CMD ["go","run","index.go"]
+FROM scratch
+COPY --from=build /bin/demo /bin/demo
+ENTRYPOINT ["/bin/demo"]
